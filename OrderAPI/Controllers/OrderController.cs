@@ -1,10 +1,9 @@
 using Microsoft.AspNetCore.Mvc;
 using OrderAPI.Data;
 using OrderAPI.Models;
-using OrderAPI.Dtos;
-using System;
 using OrderAPI.DTOs;
 using OrderAPI.Enum;
+using System.Threading.Tasks;
 
 [ApiController]
 [Route("api/[controller]")]
@@ -17,31 +16,36 @@ public class OrderController : ControllerBase
         _context = context;
     }
 
+    /// <summary>
+    /// Cria um novo pedido.
+    /// </summary>
+    /// <param name="orderDto">Dados do pedido enviados pelo cliente.</param>
+    /// <returns>Retorna o status da criação do pedido.</returns>
     [HttpPost]
     public async Task<IActionResult> CreateOrder([FromBody] CreateOrderDto orderDto)
     {
-        // Valida o modelo recebido
+        // Validação de entrada
         if (!ModelState.IsValid)
         {
-            return BadRequest("Dados inválidos. Verifique os campos enviados.");
+            return BadRequest(ModelState); // Retorna erros detalhados de validação
         }
 
-        // Mapeia o DTO para a entidade Order
+        // Mapeamento do DTO para a entidade Order
         var order = new Order
         {
-            ClienteId = orderDto.ClienteId,
-            ValorTotal = orderDto.ValorTotal,
+            ClientName = orderDto.ClientName,
+            Value = orderDto.Value,
             Status = OrderStatus.Created
         };
 
         try
         {
-            // Salva o pedido no banco de dados
-            _context.Orders.Add(order); // Corrigido para usar o DbSet correto
+            // Adiciona o pedido ao banco de dados
+            await _context.Orders.AddAsync(order);
             await _context.SaveChangesAsync();
 
-            // Retorna uma resposta com o ID do pedido criado
-            return CreatedAtAction(nameof(CreateOrder), new { id = order.Id }, new
+            // Retorna sucesso com CreatedAtAction e link para o recurso criado
+            return CreatedAtAction(nameof(GetOrderById), new { id = order.Id }, new
             {
                 Message = "Pedido criado com sucesso!",
                 OrderId = order.Id
@@ -49,8 +53,40 @@ public class OrderController : ControllerBase
         }
         catch (Exception ex)
         {
-            // Tratamento de exceções
-            return StatusCode(500, $"Ocorreu um erro ao criar o pedido: {ex.Message}");
+            return StatusCode(500, new
+            {
+                ErrorMessage = "Ocorreu um erro interno ao criar o pedido.",
+                ExceptionMessage = ex.Message
+            });
+        }
+    }
+
+    /// <summary>
+    /// Retorna os detalhes de um pedido pelo ID.
+    /// </summary>
+    /// <param name="id">Identificador do pedido.</param>
+    /// <returns>Os detalhes do pedido.</returns>
+    [HttpGet("{id}")]
+    public async Task<IActionResult> GetOrderById(int id)
+    {
+        try
+        {
+            var order = await _context.Orders.FindAsync(id);
+
+            if (order == null)
+            {
+                return NotFound(new { Message = $"Pedido com ID {id} não encontrado." });
+            }
+
+            return Ok(order);
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(500, new
+            {
+                ErrorMessage = "Ocorreu um erro interno ao buscar o pedido.",
+                ExceptionMessage = ex.Message
+            });
         }
     }
 }
