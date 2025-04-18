@@ -1,0 +1,83 @@
+# Sistema Operacional
+######################
+# Arquivos do sistema operacional que não devem ser rastreados
+.DS_Store
+Thumbs.db
+
+# IDEs e Editores
+######################
+# Configurações específicas de IDEs e editores
+.vscode/
+.idea/
+*.swp
+
+# Compilação e Artefatos
+######################
+# Binários, bibliotecas compiladas e arquivos temporários
+bin/
+obj/
+*.dll
+*.exe
+*.so
+*.dylib
+*.pdb
+*.class
+*.pyc
+*.pyo
+*.log
+*.tmp
+
+# Dependências
+######################
+# Dependências gerenciadas por ferramentas de pacotes
+# Node.js
+node_modules/
+
+# Python
+__pycache__/
+*.egg-info/
+
+# .NET
+*.nuget/
+*.deps.json
+
+# Maven/Gradle (Java)
+*.jar
+*.war
+*.ear
+.gradle/
+.build/
+
+# Arquivos de Configuração Local
+######################
+# Credenciais, configurações locais, e arquivos gerados automaticamente
+*.env
+.env.*
+*.config
+*.local
+*.user
+
+# Logs
+######################
+# Logs de execução e depuração
+*.log
+
+# Arquivos de Banco de Dados e Outros Temporários
+######################
+# Dump de banco de dados e arquivos de cache
+*.sqlite
+*.db
+*.cache
+*.bak
+
+# Arquivos Específicos do Git
+######################
+# Arquivos específicos do Git que não devem ser rastreados
+!/.gitkeep
+
+# Específicos do Visual Studio
+######################
+# Adicionando diretórios e arquivos específicos do Visual Studio
+.vs/
+*.vsidx
+*.vscode/
